@@ -35,8 +35,10 @@ def test_kvs_commit():
     assert "bustable" not in spec["attributes"]["system"]
 
     print("\n🧝‍♀️️ Updating the spec in kvs and committing!")
-    kvs["jobspec"] = spec
-    kvs.commit()
+    # kvs["jobspec"] = spec
+    # This is the workaround
+    kvs[kvs.key_at("jobspec")] = spec
+    assert kvs.commit() == 0
 
     print("🦾️ Re-retrieving the kvs and spec...")
     kvs = flux.job.job_kvs(handle, job["id"])
@@ -63,10 +65,12 @@ def test_adding_attribute():
     print("\n🧝‍♀️️ Adding a new variable to the kvs and committing!")
     # Weird that this doesn't even stick!
     # I tried an integer, a string, and a boolean
-    kvs["burstable"] = 1
+    # kvs["burstable"] = 1
+    # This is the workaround!
+    kvs[kvs.key_at("burstable")] = 1
     value = kvs.get("burstable")
     print(f"Found value {value}")
-    kvs.commit()
+    assert kvs.commit() == 0
 
     print("🦾️ Re-retrieving the kvs...")
     kvs = flux.job.job_kvs(handle, job["id"])
